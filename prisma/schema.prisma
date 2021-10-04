@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model SubclassSpellList {
+  id         Int      @id @default(autoincrement())
+  subclassId Int
+  Subclass   Subclass @relation(fields: [subclassId], references: [id])
+  spellId    Int
+  Spell      Spell    @relation(fields: [spellId], references: [id])
+
+  @@unique([subclassId, spellId])
+}
+
+model Subclass {
+  id                Int                 @id @default(autoincrement())
+  name              String
+  Class             Class               @relation(fields: [classId], references: [id])
+  classId           Int
+  SubclassSpellList SubclassSpellList[]
+}
+
+model ClassSpellList {
+  id           Int     @id @default(autoincrement())
+  classId      Int
+  Class        Class   @relation(fields: [classId], references: [id])
+  spellId      Int
+  Spell        Spell   @relation(fields: [spellId], references: [id])
+  isAdditional Boolean @default(false)
+
+  @@unique([classId, spellId])
+}
+
+model Class {
+  id             Int              @id @default(autoincrement())
+  name           String           @unique
+  subclassLabel  String
+  subclasses     Subclass[]
+  ClassSpellList ClassSpellList[]
+}
+
+model SpellSource {
+  id       Int    @id @default(autoincrement())
+  spellId  Int
+  Spell    Spell  @relation(fields: [spellId], references: [id])
+  sourceId Int
+  Source   Source @relation(fields: [sourceId], references: [id])
+
+  @@unique([spellId, sourceId])
+}
+
+model Spell {
+  id                  Int                 @id @default(autoincrement())
+  name                String              @unique
+  slug                String              @unique
+  description         String
+  higherLevel         String?
+  range               String
+  components          String
+  material            String?
+  ritual              Boolean             @default(false)
+  duration            String
+  concentration       Boolean             @default(false)
+  castingTime         String
+  castingTimeModifier String?
+  level               Int
+  school              String
+  attackSave          String?
+  damageEffect        String?
+  ClassSpellList      ClassSpellList[]
+  SubclassSpellList   SubclassSpellList[]
+  SpellSource         SpellSource[]
+}
+
+model Source {
+  id           Int           @id @default(autoincrement())
+  name         String        @unique
+  abbreviation String?
+  SpellSource  SpellSource[]
+}
