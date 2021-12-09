@@ -232,6 +232,10 @@ const data: ClassType = {
     toKebabCase("Abi-Dalzim's horrid wilting"),
     toKebabCase("Mass polymorph"),
     toKebabCase("Psychic scream"),
+    toKebabCase("Silvery Barbs"),
+    toKebabCase("Kinetic Jaunt"),
+    toKebabCase("Vortex Warp"),
+    toKebabCase("Wither and Bloom"),
   ],
   additional_spells: [
     toKebabCase("Booming blade"),

@@ -59,6 +59,7 @@ export const typeDefs = gql`
     INCAPACITATED
     LIGHTNING
     NECROTIC
+    MOVEMENT
     POISON
     PIERCING
     PRONE
@@ -132,8 +133,13 @@ export const typeDefs = gql`
     allClasses: [Class!]!
     classById(id: Int): Class
     spellFeed(
-      orderBy: SpellOrderByInput
       searchString: String
+      isRitual: Boolean
+      isConcentration: Boolean
+      minLevel: Int
+      maxLevel: Int
+      schools: [SpellSchool]
+      orderBy: SpellOrderByInput
       skip: Int
       take: Int
     ): [Spell!]!
@@ -146,54 +152,86 @@ export const resolvers = {
   SpellComponents: COMPONENTS,
   SpellSchool: SCHOOL,
   Query: {
-    info: () => `This is the API of Spellbook 2.0`,
-    allSources: async (_parent: any, _args: any, context: Context) => {
+    info: (): string => `This is the API of Spellbook 2.0`,
+    allSources: async (
+      _parent: unknown,
+      _args: unknown,
+      context: Context
+    ): Promise<Source[]> => {
       return context.prisma.source.findMany();
     },
     sourceById: async (
-      _parent: any,
+      _parent: unknown,
       args: { id: number },
       context: Context
-    ) => {
+    ): Promise<Source | null> => {
       return context.prisma.source.findUnique({ where: { id: args.id } });
     },
-    allSpells: async (_parent: any, _args: any, context: Context) => {
+    allSpells: async (
+      _parent: unknown,
+      _args: unknown,
+      context: Context
+    ): Promise<Spell[]> => {
       return context.prisma.spell.findMany();
     },
-    spellById: async (_parent: any, args: { id: number }, context: Context) => {
+    spellById: async (
+      _parent: unknown,
+      args: { id: number },
+      context: Context
+    ): Promise<Spell | null> => {
       return context.prisma.spell.findUnique({ where: { id: args.id } });
     },
-    allClasses: async (_parent: any, _args: any, context: Context) => {
+    allClasses: async (
+      _parent: unknown,
+      _args: unknown,
+      context: Context
+    ): Promise<Class[]> => {
       return context.prisma.class.findMany();
     },
-    classById: async (_parent: any, args: { id: number }, context: Context) => {
+    classById: async (
+      _parent: unknown,
+      args: { id: number },
+      context: Context
+    ): Promise<Class | null> => {
       return context.prisma.class.findUnique({ where: { id: args.id } });
     },
     spellFeed: async (
-      _parent: any,
-      args: {
-        searchString: string;
-        skip: number;
-        take: number;
-        orderBy: Array<SpellOrderByInput>;
-      },
+      _parent: unknown,
+      args: Partial<SpellFilterArgs>,
       context: Context
-    ) => {
+    ): Promise<Spell[]> => {
       return context.prisma.spell.findMany({
         where: {
           OR: [
             { name: { contains: args.searchString } },
             { description: { contains: args.searchString } },
           ],
+          ritual: args.isRitual,
+          concentration: args.isConcentration,
+          school: {
+            in: args.schools,
+          },
+          level: {
+            gte: args.minLevel,
+            lte: args.maxLevel,
+          },
         },
-        take: args?.take,
-        skip: args?.skip,
-        orderBy: args?.orderBy,
+        take: args.take,
+        skip: args.skip,
+        orderBy: args.orderBy
+          ? Object.entries(args.orderBy).map((entry) => ({
+              [entry[0]]: entry[1],
+            }))
+          : undefined,
       });
     },
   },
   Source: {
-    spells: async (parent: Source, _args: any, context: Context) => {
+    spells: async (
+      parent: Source,
+      _args: unknown,
+      context: Context
+    ): Promise<Spell[]> => {
       const result = await context.prisma.spellSource.findMany({
         where: { sourceId: parent.id },
         include: { Spell: true },
@@ -202,7 +240,11 @@ export const resolvers = {
     },
   },
   Spell: {
-    sources: async (parent: Spell, _args: any, context: Context) => {
+    sources: async (
+      parent: Spell,
+      _args: unknown,
+      context: Context
+    ): Promise<Source[]> => {
       const result = await context.prisma.spellSource.findMany({
         where: { spellId: parent.id },
         include: { Source: true },
@@ -210,7 +252,7 @@ export const resolvers = {
       return result.map((spellSource) => spellSource.Source);
     },
     components: (parent: Spell): COMPONENTS[] | undefined => {
-      if (!parent?.components) {
+      if (!parent.components) {
         return;
       }
       const list = parent.components.split(",");
@@ -229,7 +271,7 @@ export const resolvers = {
       }) as COMPONENTS[];
     },
     attackSave: (parent: Spell): string[] | undefined => {
-      if (!parent?.attackSave) {
+      if (!parent.attackSave) {
         return;
       }
       if (!Array.isArray(parent.attackSave)) {
@@ -238,7 +280,7 @@ export const resolvers = {
       return parent.attackSave;
     },
     damageEffect: (parent: Spell): string[] | undefined => {
-      if (!parent?.damageEffect) {
+      if (!parent.damageEffect) {
         return;
       }
       if (!Array.isArray(parent.damageEffect)) {
@@ -246,14 +288,22 @@ export const resolvers = {
       }
       return parent.damageEffect;
     },
-    classes: async (parent: Spell, _args: any, context: Context) => {
+    classes: async (
+      parent: Spell,
+      _args: unknown,
+      context: Context
+    ): Promise<Class[]> => {
       const result = await context.prisma.classSpellList.findMany({
         where: { spellId: parent.id },
         include: { Class: true },
       });
       return result.map((item) => item.Class);
     },
-    subclasses: async (parent: Spell, _args: any, context: Context) => {
+    subclasses: async (
+      parent: Spell,
+      _args: unknown,
+      context: Context
+    ): Promise<Subclass[]> => {
       const result = await context.prisma.subclassSpellList.findMany({
         where: { spellId: parent.id },
         include: { Subclass: true },
@@ -262,7 +312,11 @@ export const resolvers = {
     },
   },
   Class: {
-    spellList: async (parent: Class, _args: any, context: Context) => {
+    spellList: async (
+      parent: Class,
+      _args: unknown,
+      context: Context
+    ): Promise<Spell[]> => {
       const result = await context.prisma.classSpellList.findMany({
         where: { classId: parent.id, isAdditional: false },
         include: { Spell: true },
@@ -271,16 +325,20 @@ export const resolvers = {
     },
     additionalSpellList: async (
       parent: Class,
-      _args: any,
+      _args: unknown,
       context: Context
-    ) => {
+    ): Promise<Spell[]> => {
       const result = await context.prisma.classSpellList.findMany({
         where: { classId: parent.id, isAdditional: true },
         include: { Spell: true },
       });
       return result.map((list) => list.Spell);
     },
-    subclasses: async (parent: Class, _args: any, context: Context) => {
+    subclasses: async (
+      parent: Class,
+      _args: unknown,
+      context: Context
+    ): Promise<Subclass[]> => {
       const result = await context.prisma.subclass.findMany({
         where: { classId: parent.id },
       });
@@ -288,14 +346,22 @@ export const resolvers = {
     },
   },
   Subclass: {
-    spellList: async (parent: Subclass, _args: any, context: Context) => {
+    spellList: async (
+      parent: Subclass,
+      _args: unknown,
+      context: Context
+    ): Promise<Spell[]> => {
       const result = await context.prisma.subclassSpellList.findMany({
         where: { subclassId: parent.id },
         include: { Spell: true },
       });
       return result.map((list) => list.Spell);
     },
-    parentClass: async (parent: Subclass, _args: any, context: Context) => {
+    parentClass: async (
+      parent: Subclass,
+      _args: unknown,
+      context: Context
+    ): Promise<Class[]> => {
       const result = await context.prisma.class.findMany({
         where: { id: parent.classId },
       });
@@ -304,8 +370,14 @@ export const resolvers = {
   },
 };
 
-interface SpellOrderByInput {
-  name?: Prisma.SortOrder;
-  level?: Prisma.SortOrder;
-  school?: Prisma.SortOrder;
+interface SpellFilterArgs {
+  searchString: string;
+  isRitual: boolean;
+  isConcentration: boolean;
+  minLevel: number;
+  maxLevel: number;
+  schools: SCHOOL[];
+  orderBy: Prisma.SpellOrderByWithRelationInput;
+  skip: number;
+  take: number;
 }

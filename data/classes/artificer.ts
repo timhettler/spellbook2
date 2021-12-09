@@ -162,6 +162,8 @@ const data: ClassType = {
     toKebabCase("Skill empowerment"),
     toKebabCase("Transmute rock"),
     toKebabCase("Wall of stone"),
+    toKebabCase("Kinetic Jaunt"),
+    toKebabCase("vortex warp"),
   ],
 };
 

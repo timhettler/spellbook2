@@ -27,6 +27,7 @@ export enum DAMAGE_EFFECT {
   HEALING = "Healing",
   INCAPACITATED = "Incapacitated",
   LIGHTNING = "Lightning",
+  MOVEMENT = "Movement",
   NECROTIC = "Necrotic",
   POISON = "Poison",
   PIERCING = "Piercing",

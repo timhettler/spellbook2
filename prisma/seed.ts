@@ -9,9 +9,10 @@ import PHB from "data/spells/phb";
 import XGTE from "data/spells/xgte";
 import LLOK from "data/spells/llok";
 import TCOE from "data/spells/tcoe";
+import SACOC from "data/spells/sacoc";
 import { SubclassType } from "data/types";
 
-const SPELL_SOURCES = [BASIC, PHB, XGTE, LLOK, TCOE];
+const SPELL_SOURCES = [BASIC, PHB, XGTE, LLOK, TCOE, SACOC];
 
 // Class Information
 import ARTIFICER from "data/classes/artificer";
@@ -52,7 +53,7 @@ function generateSubclassEntries(sublasses: SubclassType[]) {
 }
 
 async function main() {
-  // Using for loops here so that queries are execute syncronously. qlite does not support "multi-user use cases", meaning only one thread can be writing to it at a time.
+  // Using for loops here so that queries are execute synchronously. sqlite does not support "multi-user use cases", meaning only one thread can be writing to it at a time.
   for (const source of SPELL_SOURCES) {
     const sourceResult = await prisma.source.upsert({
       where: { name: source.meta.name },
