@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-import { toKebabCase } from "src/utils/toKebabCase";
+import { toKebabCase, convertToString } from "functions/utils";
 
 // Spell Sources
 import BASIC from "data/spells/basic";
@@ -36,13 +36,6 @@ const CLASS_INFO = [
   WARLOCK,
   WIZARD,
 ];
-
-function convertToString(strOrArray?: string | string[] | null) {
-  if (Array.isArray(strOrArray)) {
-    return strOrArray.join(",");
-  }
-  return strOrArray;
-}
 
 function generateSubclassEntries(sublasses: SubclassType[]) {
   return sublasses.map((subclass) =>

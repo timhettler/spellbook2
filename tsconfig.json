@@ -6,10 +6,16 @@
     "strict": true,
     "lib": ["esnext"],
     "esModuleInterop": true,
+    "isolatedModules": true,
     "baseUrl": "./",
     "paths": {
       "@data/*": ["./data/*"]
     }
   },
-  "include": ["./src/**/*", "./prisma/**/*", "./data/**/*"]
+  "include": [
+    "./src/**/*",
+    "./prisma/**/*",
+    "./data/**/*",
+    "./functions/**/*"
+  ]
 }
