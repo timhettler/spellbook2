@@ -1,4 +1,4 @@
-import { toKebabCase } from "functions/utils/toKebabCase";
+import { toKebabCase } from "src/utils";
 import { ClassType } from "data/types";
 
 const data: ClassType = {

@@ -1,6 +1,6 @@
 # example netlify.toml
 [build]
-  command = "yarn build"
+  command = "exit 0"
   functions = "functions/"
   publish = "public/"
 

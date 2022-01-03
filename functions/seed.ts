@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-import { toKebabCase, convertToString } from "functions/utils";
+import { toKebabCase, convertToString } from "src/utils";
 
 // Spell Sources
 import BASIC from "data/spells/basic";
