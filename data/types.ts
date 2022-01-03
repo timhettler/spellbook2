@@ -1,4 +1,4 @@
-import { ATTACK_SAVE, DAMAGE_EFFECT, SCHOOL } from "data/const";
+import { ATTACK_SAVE, DAMAGE_EFFECT, SCHOOL } from "@data/const";
 
 export interface SpellType {
   name: string;

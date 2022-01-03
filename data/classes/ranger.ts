@@ -1,5 +1,5 @@
-import { toKebabCase } from "src/utils";
-import { ClassType } from "data/types";
+import { toKebabCase } from "@src/utils";
+import { ClassType } from "@data/types";
 
 const data: ClassType = {
   name: "Ranger",

@@ -1,5 +1,5 @@
 import { DAMAGE_EFFECT, SCHOOL } from "../const";
-import { SourceType } from "data/types";
+import { SourceType } from "@data/types";
 
 const data: SourceType = {
   meta: {

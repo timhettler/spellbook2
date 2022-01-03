@@ -1,29 +1,29 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-import { toKebabCase, convertToString } from "src/utils";
+import { toKebabCase, convertToString } from "@src/utils";
 
 // Spell Sources
-import BASIC from "data/spells/basic";
-import PHB from "data/spells/phb";
-import XGTE from "data/spells/xgte";
-import LLOK from "data/spells/llok";
-import TCOE from "data/spells/tcoe";
-import SACOC from "data/spells/sacoc";
-import { SubclassType } from "data/types";
+import BASIC from "@data/spells/basic";
+import PHB from "@data/spells/phb";
+import XGTE from "@data/spells/xgte";
+import LLOK from "@data/spells/llok";
+import TCOE from "@data/spells/tcoe";
+import SACOC from "@data/spells/sacoc";
+import { SubclassType } from "@data/types";
 
 const SPELL_SOURCES = [BASIC, PHB, XGTE, LLOK, TCOE, SACOC];
 
 // Class Information
-import ARTIFICER from "data/classes/artificer";
-import BARD from "data/classes/bard";
-import CLERIC from "data/classes/cleric";
-import DRUID from "data/classes/druid";
-import PALADIN from "data/classes/paladin";
-import RANGER from "data/classes/ranger";
-import SORCERER from "data/classes/sorcerer";
-import WARLOCK from "data/classes/warlock";
-import WIZARD from "data/classes/wizard";
+import ARTIFICER from "@data/classes/artificer";
+import BARD from "@data/classes/bard";
+import CLERIC from "@data/classes/cleric";
+import DRUID from "@data/classes/druid";
+import PALADIN from "@data/classes/paladin";
+import RANGER from "@data/classes/ranger";
+import SORCERER from "@data/classes/sorcerer";
+import WARLOCK from "@data/classes/warlock";
+import WIZARD from "@data/classes/wizard";
 
 const CLASS_INFO = [
   ARTIFICER,

@@ -1,8 +1,8 @@
 # example netlify.toml
 [build]
-  command = "exit 0"
+  command = "npx tsc"
   functions = "functions/"
-  publish = "public/"
+  publish = "dist/"
 
   ## Uncomment to use this redirect for Single Page Applications like create-react-app.
   ## Not needed for static site generators.
